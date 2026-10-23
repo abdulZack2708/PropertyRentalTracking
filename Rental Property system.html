@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTrack Pro | Rental Property & Tenant Management</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen bg-slate-50 flex flex-col">
+
+  <!-- ================= AUTH VIEW: LOGIN SCREEN ================= -->
+  <div id="auth-view" class="min-h-screen w-full flex items-center justify-center p-4 bg-slate-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
+    <div class="max-w-md w-full bg-white rounded-3xl p-8 shadow-2xl border border-slate-100/10">
+      
+      <!-- Logo & Branding -->
+      <div class="text-center mb-8">
+        <div class="w-14 h-14 bg-slate-900 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center shadow-lg border border-slate-700/50 mb-4">
+          <i data-lucide="building-2" class="w-7 h-7"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">PropTrack Pro</h1>
+        <p class="text-xs text-slate-500 mt-1 font-medium">Rental Property Management & Owner Capex Portal</p>
+      </div>
+
+      <!-- Quick Demo Access Bar -->
+      <div class="mb-6 p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
+        <div class="text-left">
+          <p class="text-[11px] font-bold text-emerald-900">Demo Agency Credentials</p>
+          <p class="text-[11px] text-emerald-700 font-mono">admin@proptrack.com &bull; pass123</p>
+        </div>
+        <button onclick="fillDemoCredentials()" type="button" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition active:scale-95">
+          Auto-Fill
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1.5">Email Address</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i data-lucide="mail" class="w-4 h-4"></i>
+            </span>
+            <input type="email" id="login-email" required placeholder="name@proptrack.com" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-slate-800 focus:bg-white transition">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1.5">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+            </span>
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-slate-800 focus:bg-white transition">
+          </div>
+        </div>
+
+        <div id="login-error" class="hidden text-rose-500 font-semibold text-xs text-center py-1"></div>
+
+        <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition-all active:scale-[0.99] flex items-center justify-center space-x-2">
+          <span>Sign In to Dashboard</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+        <p class="text-[11px] text-slate-400">PropTrack Pro &bull; Designed for Real Estate Owners & Agents</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN APPLICATION VIEW ================= -->
+  <div id="app-view" class="hidden min-h-screen flex flex-col md:flex-row w-full">
+    
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 select-none">
+      <div>
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center font-bold shadow-xs">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h1 class="font-bold text-slate-900 text-sm leading-tight tracking-tight">PropTrack Pro</h1>
+              <span class="text-[11px] text-slate-400 font-medium">Rental Management</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="p-3 space-y-1">
+          <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-900 bg-slate-100">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Main Dashboard</span>
+          </button>
+          <button onclick="switchTab('owner-prep')" id="nav-owner-prep" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-600 hover:bg-slate-50">
+            <i data-lucide="hammer" class="w-4 h-4 text-purple-600"></i>
+            <span>Owner Prep Expenses</span>
+          </button>
+          <button onclick="switchTab('properties')" id="nav-properties" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-600 hover:bg-slate-50">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            <span>Properties</span>
+          </button>
+          <button onclick="switchTab('tenants')" id="nav-tenants" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-600 hover:bg-slate-50">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>Tenants (Tied)</span>
+          </button>
+          <button onclick="switchTab('utilities')" id="nav-utilities" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-600 hover:bg-slate-50">
+            <i data-lucide="receipt" class="w-4 h-4"></i>
+            <span>Utility Bills (Water & TNB)</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- User Profile & Reset Demo Data Box -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs">
+            OA
+          </div>
+          <div class="truncate flex-1">
+            <p id="user-display-email" class="text-xs font-bold text-slate-900 truncate">admin@proptrack.com</p>
+            <p class="text-[10px] text-emerald-600 font-semibold">Active Agent Session</p>
+          </div>
+        </div>
+
+        <button onclick="resetDataDemo()" class="w-full text-xs py-2 px-3 bg-white border border-slate-200 text-slate-600 font-medium rounded-xl hover:bg-slate-100 flex items-center justify-center space-x-1.5 transition">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>Reset Demo Data</span>
+        </button>
+
+        <button onclick="handleLogout()" class="w-full text-xs py-2 px-3 bg-rose-50 border border-rose-200 text-rose-600 font-semibold rounded-xl hover:bg-rose-100 flex items-center justify-center space-x-1.5 transition">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          <span>Log Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+      
+      <!-- Top Header Bar with Global Year & Property Filters -->
+      <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sticky top-0 z-20">
+        <div>
+          <h2 id="page-title" class="text-base font-bold text-slate-900 tracking-tight">Main Dashboard</h2>
+          <p id="page-desc" class="text-xs text-slate-500">Overview of rental returns, active tenancies, and utility payments.</p>
+        </div>
+
+        <div class="flex items-center space-x-2.5 flex-wrap">
+          <!-- Year Filter -->
+          <div class="flex items-center space-x-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+            <select id="filter-year" onchange="renderCurrentTab()" class="bg-transparent text-xs font-semibold text-slate-700 outline-none cursor-pointer">
+              <option value="all">All Years</option>
+              <option value="2026" selected>Year 2026</option>
+              <option value="2025">Year 2025</option>
+            </select>
+          </div>
+
+          <!-- Property Filter -->
+          <div class="flex items-center space-x-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+            <i data-lucide="filter" class="w-3.5 h-3.5 text-slate-400"></i>
+            <select id="filter-property" onchange="renderCurrentTab()" class="bg-transparent text-xs font-semibold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate">
+              <!-- Populated via JavaScript -->
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="p-6 md:p-8 space-y-8 flex-1 max-w-7xl w-full mx-auto">
+        
+        <!-- ================= TAB 1: MAIN DASHBOARD ================= -->
+        <section id="view-dashboard" class="tab-view space-y-6">
+          
+          <!-- KPI Statistics Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Properties</p>
+                <h3 id="stat-total-props" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+                <span id="stat-occupancy" class="text-xs font-medium text-emerald-600 mt-1 inline-block">0% Occupancy</span>
+              </div>
+              <div class="w-11 h-11 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="home" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Est. Monthly Rental</p>
+                <h3 id="stat-monthly-rent" class="text-2xl font-bold text-slate-900 mt-1">RM 0</h3>
+                <span class="text-xs text-slate-400 mt-1 inline-block">From currently occupied units</span>
+              </div>
+              <div class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="banknote" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Unpaid Utility Bills</p>
+                <h3 id="stat-unpaid-bills" class="text-2xl font-bold text-amber-600 mt-1">RM 0</h3>
+                <span id="stat-unpaid-count" class="text-xs font-medium text-amber-500 mt-1 inline-block">0 unpaid bills</span>
+              </div>
+              <div class="w-11 h-11 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Prep Capex</p>
+                <h3 id="stat-prep-expenses" class="text-2xl font-bold text-slate-900 mt-1">RM 0</h3>
+                <span class="text-xs text-slate-400 mt-1 inline-block">Unit readiness investments</span>
+              </div>
+              <div class="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="wrench" class="w-5 h-5"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Overview Cards -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm">Property Status & Live Quick View</h3>
+                <p class="text-xs text-slate-500">Click "View Full Profile" on any property unit to inspect tied tenant, utilities, and Capex.</p>
+              </div>
+              <button onclick="openModal('modal-add-property')" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition flex items-center space-x-1.5 shrink-0">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add New Property</span>
+              </button>
+            </div>
+            <div id="dashboard-property-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-2">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 2: OWNER PREP EXPENSES DASHBOARD ================= -->
+        <section id="view-owner-prep" class="tab-view hidden space-y-6">
+          <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-[11px] font-bold tracking-wider uppercase text-emerald-400">Owner's Capex Dashboard</span>
+              <h3 class="text-lg font-bold mt-1">Rental House Preparation & Setup Expenses</h3>
+              <p class="text-slate-300 text-xs mt-1">Track upfront unit preparation investments: painting, aircond maintenance, deep cleaning, and security locks.</p>
+            </div>
+            <button onclick="openModal('modal-add-prep')" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow-sm shrink-0">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Add Preparation Expense</span>
+            </button>
+          </div>
+
+          <!-- Capex KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+              <p class="text-[11px] font-semibold text-slate-400 uppercase">Total Preparation Capex</p>
+              <h4 id="capex-total" class="text-2xl font-bold text-slate-900 mt-1">RM 0</h4>
+              <p class="text-xs text-slate-400 mt-1">Total invested to prepare units</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+              <p class="text-[11px] font-semibold text-slate-400 uppercase">Average Capex / Property</p>
+              <h4 id="capex-average" class="text-2xl font-bold text-slate-900 mt-1">RM 0</h4>
+              <p class="text-xs text-slate-400 mt-1">Per recorded rental property</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+              <p class="text-[11px] font-semibold text-slate-400 uppercase">Total Items & Services</p>
+              <h4 id="capex-items-count" class="text-2xl font-bold text-slate-900 mt-1">0 Items</h4>
+              <p class="text-xs text-slate-400 mt-1">Completed repairs & purchases</p>
+            </div>
+          </div>
+
+          <!-- Capex Breakdown Table with Formula (Units x Rate = Total) -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Itemised Unit Preparation Costs</h4>
+                <p class="text-xs text-slate-500 mt-0.5">Calculated as: <strong>Quantity (Units) &times; Rate (RM / Unit) = Total Cost (RM)</strong></p>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100">
+                  <tr>
+                    <th class="px-5 py-3">Property Unit</th>
+                    <th class="px-5 py-3">Item / Service Description</th>
+                    <th class="px-5 py-3">Category</th>
+                    <th class="px-5 py-3 text-center">Units / Qty</th>
+                    <th class="px-5 py-3 text-right">RM / Unit</th>
+                    <th class="px-5 py-3 text-right">Total (RM)</th>
+                    <th class="px-5 py-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="owner-prep-table-body" class="divide-y divide-slate-100">
+                  <!-- Dynamically generated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 3: PROPERTIES LIST ================= -->
+        <section id="view-properties" class="tab-view hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Rental Properties Directory</h3>
+              <p class="text-xs text-slate-500">Click "View Full Profile" on any card to view tied tenant, utility bills, and preparation expenses.</p>
+            </div>
+            <button onclick="openModal('modal-add-property')" class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition flex items-center space-x-1.5 shrink-0">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Add New Property</span>
+            </button>
+          </div>
+
+          <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamically generated -->
+          </div>
+        </section>
+
+        <!-- ================= TAB 4: TENANTS (TIED TO PROPERTY) ================= -->
+        <section id="view-tenants" class="tab-view hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Tenant Records (Tied Directly to Properties)</h3>
+              <p class="text-xs text-slate-500">Every active tenant is strictly linked to their respective property unit.</p>
+            </div>
+            <button onclick="openModal('modal-add-tenant')" class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition flex items-center space-x-1.5 shrink-0">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>Assign / Register Tenant</span>
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100">
+                  <tr>
+                    <th class="px-5 py-3.5">Tenant & Contact</th>
+                    <th class="px-5 py-3.5">Tied Property Unit</th>
+                    <th class="px-5 py-3.5">Monthly Rent</th>
+                    <th class="px-5 py-3.5">Deposit Held</th>
+                    <th class="px-5 py-3.5">Lease Agreement</th>
+                    <th class="px-5 py-3.5 text-center">Status</th>
+                    <th class="px-5 py-3.5 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tenants-table-body" class="divide-y divide-slate-100">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 5: UTILITY BILLS ================= -->
+        <section id="view-utilities" class="tab-view hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Utility Bills Tracker (Water & TNB Electricity)</h3>
+              <p class="text-xs text-slate-500">Track monthly utility bills per property and monitor whether tenants have paid or remain outstanding.</p>
+            </div>
+            <button onclick="openModal('modal-add-bill')" class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition flex items-center space-x-1.5 shrink-0">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Record New Bill</span>
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100">
+                  <tr>
+                    <th class="px-5 py-3.5">Property & Tenant</th>
+                    <th class="px-5 py-3.5">Billing Period</th>
+                    <th class="px-5 py-3.5">Water Bill (RM)</th>
+                    <th class="px-5 py-3.5">Electricity / TNB (RM)</th>
+                    <th class="px-5 py-3.5 font-bold text-slate-900">Total Utilities</th>
+                    <th class="px-5 py-3.5 text-center">Payment Status</th>
+                    <th class="px-5 py-3.5 text-center">Quick Toggle</th>
+                    <th class="px-5 py-3.5 text-center">Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="bills-table-body" class="divide-y divide-slate-100">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= MODAL: PROPERTY FULL DETAILS (FORM & VIEW) ================= -->
+  <div id="modal-property-detail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl border border-slate-100">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center font-bold">
+            <i data-lucide="home" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="prop-detail-name" class="font-bold text-base text-slate-900">Property Name</h3>
+            <span id="prop-detail-badge" class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold">Status</span>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-property-detail')" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        
+        <!-- Section 1: Overview Specs -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+          <div>
+            <span class="text-xs text-slate-400 font-medium">Full Address</span>
+            <p id="prop-detail-address" class="text-xs font-semibold text-slate-800 mt-1 leading-relaxed">-</p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-medium">Property Category</span>
+            <p id="prop-detail-type" class="text-xs font-semibold text-slate-800 mt-1">-</p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-medium">Target Rental Rate</span>
+            <p id="prop-detail-rent" class="text-xs font-semibold text-slate-800 mt-1">RM 0 / month</p>
+          </div>
+        </div>
+
+        <!-- Section 2: Tied Tenant Profile -->
+        <div class="border border-slate-200/80 rounded-2xl p-5 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
+              <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wide">Tied Current Tenant</h4>
+            </div>
+            <div id="prop-detail-tenant-action"></div>
+          </div>
+          <div id="prop-detail-tenant-content">
+            <!-- Dynamically populated or 'No Tenant' alert -->
+          </div>
+        </div>
+
+        <!-- Section 3: Utility Bills Tied to this Property -->
+        <div class="border border-slate-200/80 rounded-2xl p-5 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="receipt" class="w-4 h-4 text-blue-600"></i>
+              <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wide">Utility Billing History for this Unit</h4>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium">Water & TNB Electricity</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-semibold">
+                <tr>
+                  <th class="px-3 py-2">Period</th>
+                  <th class="px-3 py-2">Water</th>
+                  <th class="px-3 py-2">TNB Bill</th>
+                  <th class="px-3 py-2 font-bold">Total</th>
+                  <th class="px-3 py-2 text-center">Status</th>
+                  <th class="px-3 py-2 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="prop-detail-bills-tbody" class="divide-y divide-slate-100">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 4: Prep Expenses Tied to this Property -->
+        <div class="border border-slate-200/80 rounded-2xl p-5 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="wrench" class="w-4 h-4 text-purple-600"></i>
+              <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wide">Preparation & Setup Capex for this Unit</h4>
+            </div>
+            <span id="prop-detail-prep-sum" class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg">Total: RM 0</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-semibold">
+                <tr>
+                  <th class="px-3 py-2">Preparation Item</th>
+                  <th class="px-3 py-2">Category</th>
+                  <th class="px-3 py-2 text-center">Quantity</th>
+                  <th class="px-3 py-2 text-right">RM / Unit</th>
+                  <th class="px-3 py-2 text-right">Total (RM)</th>
+                </tr>
+              </thead>
+              <tbody id="prop-detail-prep-tbody" class="divide-y divide-slate-100">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD PROPERTY ================= -->
+  <div id="modal-add-property" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-sm text-slate-900">Register New Rental Property</h3>
+        <button onclick="closeModal('modal-add-property')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="form-add-property" onsubmit="handleCreateProperty(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Property Unit Name / Title</label>
+          <input type="text" id="prop-name" required placeholder="e.g. Vista Residences - Unit B-12-03" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Property Type</label>
+            <select id="prop-type" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+              <option value="Condominium / Serviced Apt">Condominium / Apt</option>
+              <option value="Terraced House">Terraced House</option>
+              <option value="Studio / SoHo">Studio / SoHo</option>
+              <option value="Room Rental">Room Rental</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Target Monthly Rent (RM)</label>
+            <input type="number" id="prop-rent" required placeholder="1800" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Full Property Address</label>
+          <textarea id="prop-address" rows="2" required placeholder="Street address, Postcode, City, State" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-slate-800"></textarea>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-property')" class="px-4 py-2 border rounded-xl hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800">Save Property</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD / TIED TENANT ================= -->
+  <div id="modal-add-tenant" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-sm text-slate-900">Register & Tie Tenant to Property</h3>
+        <button onclick="closeModal('modal-add-tenant')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="form-add-tenant" onsubmit="handleCreateTenant(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Select Property (Tied Unit)</label>
+          <select id="tenant-prop-select" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Full Tenant Name</label>
+            <input type="text" id="tenant-name" required placeholder="Ahmad Firdaus" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Phone Number (WhatsApp)</label>
+            <input type="text" id="tenant-phone" required placeholder="012-3456789" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Identity Card (IC) / Passport</label>
+            <input type="text" id="tenant-ic" placeholder="920101-10-5432" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Security Deposit Paid (RM)</label>
+            <input type="number" id="tenant-deposit" required placeholder="3600" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Lease Start Date</label>
+            <input type="date" id="tenant-start" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Lease End Date</label>
+            <input type="date" id="tenant-end" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-tenant')" class="px-4 py-2 border rounded-xl hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800">Tie & Save Tenant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD UTILITY BILL ================= -->
+  <div id="modal-add-bill" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-sm text-slate-900">Record Utility Bill (Water & TNB)</h3>
+        <button onclick="closeModal('modal-add-bill')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="form-add-bill" onsubmit="handleCreateBill(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Target Property</label>
+          <select id="bill-prop-select" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Billing Month</label>
+            <select id="bill-month" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+              <option value="Jan">January</option>
+              <option value="Feb">February</option>
+              <option value="Mar">March</option>
+              <option value="Apr">April</option>
+              <option value="May">May</option>
+              <option value="Jun">June</option>
+              <option value="Jul">July</option>
+              <option value="Aug">August</option>
+              <option value="Sep">September</option>
+              <option value="Oct" selected>October</option>
+              <option value="Nov">November</option>
+              <option value="Dec">December</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Year</label>
+            <input type="number" id="bill-year" value="2026" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Water Bill (RM)</label>
+            <input type="number" step="0.01" id="bill-water" required placeholder="35.50" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Electricity / TNB Bill (RM)</label>
+            <input type="number" step="0.01" id="bill-electric" required placeholder="140.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Payment Status by Tenant</label>
+          <select id="bill-status" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+            <option value="Unpaid">Pending / Unpaid</option>
+            <option value="Paid">Fully Paid</option>
+          </select>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-bill')" class="px-4 py-2 border rounded-xl hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800">Save Bill Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD PREP EXPENSE ================= -->
+  <div id="modal-add-prep" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-sm text-slate-900">Add Property Preparation Expense (Owner Capex)</h3>
+        <button onclick="closeModal('modal-add-prep')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="form-add-prep" onsubmit="handleCreatePrep(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Target Property</label>
+          <select id="prep-prop-select" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Item / Task Description</label>
+          <input type="text" id="prep-name" required placeholder="e.g. Full Interior Wall Repainting" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Category</label>
+            <select id="prep-cat" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+              <option value="Painting & Renovation">Painting & Renovation</option>
+              <option value="Deep Cleaning & Sanitation">Deep Cleaning & Sanitation</option>
+              <option value="Locks & Security">Locks & Security</option>
+              <option value="Furniture & Appliances">Furniture & Appliances</option>
+              <option value="Plumbing & Electrical">Plumbing & Electrical</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Expense Year</label>
+            <input type="number" id="prep-year" value="2026" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Quantity / Units</label>
+            <input type="number" id="prep-qty" oninput="calcPrepTotal()" required value="1" min="1" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Cost per Unit (RM)</label>
+            <input type="number" step="0.01" id="prep-rate" oninput="calcPrepTotal()" required placeholder="250.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-slate-800">
+          </div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/70 flex items-center justify-between">
+          <span class="font-medium text-slate-600">Calculated Subtotal:</span>
+          <span id="prep-calc-display" class="font-bold text-slate-900 text-sm">RM 0.00</span>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-prep')" class="px-4 py-2 border rounded-xl hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800">Save Expense Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
+  <script>
+    const STORAGE_KEY = 'proptrack_db_en_v1';
+    const AUTH_KEY = 'proptrack_auth_session';
+
+    // Realistic Malaysian Real Estate Initial Dataset
+    const defaultDatabase = {
+      properties: [
+        {
+          id: 'prop-1',
+          name: 'Residensi Vista Bangi (B-14-02)',
+          type: 'Condominium / Serviced Apt',
+          address: 'Jalan Reko, Bandar Baru Bangi, 43650 Selangor',
+          monthlyRent: 1600,
+          status: 'Occupied'
+        },
+        {
+          id: 'prop-2',
+          name: 'Taman Pelangi Semenyih (No. 45)',
+          type: 'Terraced House',
+          address: 'No 45, Jalan TPS 3/2, Taman Pelangi Semenyih, 43500 Selangor',
+          monthlyRent: 1300,
+          status: 'Occupied'
+        },
+        {
+          id: 'prop-3',
+          name: 'Hyve SoHo Suites Cyberjaya (A-08-11)',
+          type: 'Studio / SoHo',
+          address: 'Jalan Impact, Cyber 6, 63000 Cyberjaya, Selangor',
+          monthlyRent: 1100,
+          status: 'Vacant'
+        }
+      ],
+      tenants: [
+        {
+          id: 'ten-1',
+          propertyId: 'prop-1',
+          name: 'Muhammad Faris Bin Yusof',
+          phone: '018-2948191',
+          ic: '930812-10-5541',
+          deposit: 3200,
+          startDate: '2026-01-01',
+          endDate: '2026-12-31',
+          status: 'Active'
+        },
+        {
+          id: 'ten-2',
+          propertyId: 'prop-2',
+          name: 'Siti Nur Aisyah',
+          phone: '012-7654321',
+          ic: '960415-08-6212',
+          deposit: 2600,
+          startDate: '2025-06-01',
+          endDate: '2026-05-31',
+          status: 'Active'
+        }
+      ],
+      utilities: [
+        {
+          id: 'util-1',
+          propertyId: 'prop-1',
+          month: 'Oct',
+          year: 2026,
+          water: 24.50,
+          electricity: 115.80,
+          status: 'Paid'
+        },
+        {
+          id: 'util-2',
+          propertyId: 'prop-1',
+          month: 'Sep',
+          year: 2026,
+          water: 28.00,
+          electricity: 142.00,
+          status: 'Paid'
+        },
+        {
+          id: 'util-3',
+          propertyId: 'prop-2',
+          month: 'Oct',
+          year: 2026,
+          water: 35.00,
+          electricity: 165.50,
+          status: 'Unpaid'
+        },
+        {
+          id: 'util-4',
+          propertyId: 'prop-3',
+          month: 'Oct',
+          year: 2026,
+          water: 6.00,
+          electricity: 18.00,
+          status: 'Unpaid'
+        }
+      ],
+      preparationExpenses: [
+        {
+          id: 'prep-1',
+          propertyId: 'prop-1',
+          item: 'Full Interior Wall Painting & Accent Wall',
+          category: 'Painting & Renovation',
+          units: 1,
+          costPerUnit: 1200,
+          year: 2026
+        },
+        {
+          id: 'prep-2',
+          propertyId: 'prop-1',
+          item: 'Smart Digital Door Lock Installation',
+          category: 'Locks & Security',
+          units: 1,
+          costPerUnit: 350,
+          year: 2026
+        },
+        {
+          id: 'prep-3',
+          propertyId: 'prop-2',
+          item: 'Chemical Servicing for 1.5HP Air Conditioning',
+          category: 'Deep Cleaning & Sanitation',
+          units: 3,
+          costPerUnit: 120,
+          year: 2026
+        },
+        {
+          id: 'prep-4',
+          propertyId: 'prop-3',
+          item: 'Deep Cleaning, Carpet Steam & Sofa Sanitization',
+          category: 'Deep Cleaning & Sanitation',
+          units: 1,
+          costPerUnit: 280,
+          year: 2026
+        },
+        {
+          id: 'prep-5',
+          propertyId: 'prop-3',
+          item: 'High-Efficiency LED Lighting & Ceiling Fans',
+          category: 'Plumbing & Electrical',
+          units: 4,
+          costPerUnit: 85,
+          year: 2026
+        }
+      ]
+    };
+
+    let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultDatabase;
+    let currentTab = 'dashboard';
+
+    function saveDB() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+
+    function resetDataDemo() {
+      db = JSON.parse(JSON.stringify(defaultDatabase));
+      saveDB();
+      initApp();
+    }
+
+    // ================= AUTHENTICATION LOGIC =================
+    function checkAuthSession() {
+      const session = localStorage.getItem(AUTH_KEY);
+      const authView = document.getElementById('auth-view');
+      const appView = document.getElementById('app-view');
+
+      if (session) {
+        authView.classList.add('hidden');
+        appView.classList.remove('hidden');
+        document.getElementById('user-display-email').innerText = session;
+        initApp();
+      } else {
+        authView.classList.remove('hidden');
+        appView.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function fillDemoCredentials() {
+      document.getElementById('login-email').value = 'admin@proptrack.com';
+      document.getElementById('login-password').value = 'pass123';
+      document.getElementById('login-error').classList.add('hidden');
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-password').value.trim();
+      const errorEl = document.getElementById('login-error');
+
+      // Verify sample credentials or any valid email
+      if (email && pass.length >= 4) {
+        localStorage.setItem(AUTH_KEY, email);
+        errorEl.classList.add('hidden');
+        checkAuthSession();
+      } else {
+        errorEl.innerText = 'Invalid credentials. Please enter email and password.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem(AUTH_KEY);
+      checkAuthSession();
+    }
+
+    // ================= NAVIGATION & TAB SWITCHING =================
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-100', 'text-slate-900');
+        btn.classList.add('text-slate-600');
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeNav) {
+        activeNav.classList.add('bg-slate-100', 'text-slate-900');
+        activeNav.classList.remove('text-slate-600');
+      }
+
+      const titles = {
+        'dashboard': ['Main Dashboard', 'Overview of rental returns, active tenancies, and utility payments.'],
+        'owner-prep': ['Owner Prep Expenses (Capex)', 'Analyze upfront preparation costs to get units tenant-ready.'],
+        'properties': ['Properties Directory', 'Click on any unit to open full profile, tied tenant, and billing history.'],
+        'tenants': ['Tenant Management', 'Tenants tied directly to their rented properties.'],
+        'utilities': ['Utility Bills Tracker', 'Monitor monthly Water and TNB electricity payment statuses per unit.']
+      };
+
+      if (titles[tabId]) {
+        document.getElementById('page-title').innerText = titles[tabId][0];
+        document.getElementById('page-desc').innerText = titles[tabId][1];
+      }
+
+      renderCurrentTab();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function getPropertyById(id) {
+      return db.properties.find(p => p.id === id);
+    }
+
+    function getTenantByPropId(propId) {
+      return db.tenants.find(t => t.propertyId === propId);
+    }
+
+    function calcPrepTotal() {
+      const q = parseFloat(document.getElementById('prep-qty').value) || 0;
+      const r = parseFloat(document.getElementById('prep-rate').value) || 0;
+      const total = q * r;
+      document.getElementById('prep-calc-display').innerText = `RM ${total.toLocaleString('en-MY', {minimumFractionDigits: 2})}`;
+    }
+
+    function populatePropertyDropdowns() {
+      const filterSelect = document.getElementById('filter-property');
+      const tenantSelect = document.getElementById('tenant-prop-select');
+      const billSelect = document.getElementById('bill-prop-select');
+      const prepSelect = document.getElementById('prep-prop-select');
+
+      const currentFilterVal = filterSelect.value || 'all';
+
+      let filterHtml = '<option value="all">All Properties</option>';
+      let selectHtml = '';
+
+      db.properties.forEach(p => {
+        filterHtml += `<option value="${p.id}">${p.name}</option>`;
+        selectHtml += `<option value="${p.id}">${p.name} (${p.status})</option>`;
+      });
+
+      filterSelect.innerHTML = filterHtml;
+      filterSelect.value = currentFilterVal;
+
+      if (tenantSelect) tenantSelect.innerHTML = selectHtml;
+      if (billSelect) billSelect.innerHTML = selectHtml;
+      if (prepSelect) prepSelect.innerHTML = selectHtml;
+    }
+
+    // ================= RENDER LOGIC =================
+    function renderCurrentTab() {
+      const selectedYear = document.getElementById('filter-year').value;
+      const selectedProp = document.getElementById('filter-property').value;
+
+      const filteredProps = db.properties.filter(p => selectedProp === 'all' || p.id === selectedProp);
+      
+      const filteredUtilities = db.utilities.filter(u => {
+        const matchProp = (selectedProp === 'all' || u.propertyId === selectedProp);
+        const matchYear = (selectedYear === 'all' || u.year.toString() === selectedYear);
+        return matchProp && matchYear;
+      });
+
+      const filteredPreps = db.preparationExpenses.filter(pe => {
+        const matchProp = (selectedProp === 'all' || pe.propertyId === selectedProp);
+        const matchYear = (selectedYear === 'all' || pe.year.toString() === selectedYear);
+        return matchProp && matchYear;
+      });
+
+      updateKPI(filteredProps, filteredUtilities, filteredPreps);
+
+      if (currentTab === 'dashboard') {
+        renderDashboardView(filteredProps, filteredUtilities);
+      } else if (currentTab === 'owner-prep') {
+        renderOwnerPrepView(filteredPreps);
+      } else if (currentTab === 'properties') {
+        renderPropertiesView(filteredProps);
+      } else if (currentTab === 'tenants') {
+        renderTenantsView(filteredProps);
+      } else if (currentTab === 'utilities') {
+        renderUtilitiesView(filteredUtilities);
+      }
+
+      lucide.createIcons();
+    }
+
+    function updateKPI(props, utils, preps) {
+      const totalProps = props.length;
+      const occupiedCount = props.filter(p => p.status === 'Occupied').length;
+      const occRate = totalProps > 0 ? Math.round((occupiedCount / totalProps) * 100) : 0;
+      document.getElementById('stat-total-props').innerText = totalProps;
+      document.getElementById('stat-occupancy').innerText = `${occRate}% Occupied (${occupiedCount}/${totalProps} Units)`;
+
+      const monthlyTotal = props.filter(p => p.status === 'Occupied').reduce((sum, p) => sum + (p.monthlyRent || 0), 0);
+      document.getElementById('stat-monthly-rent').innerText = `RM ${monthlyTotal.toLocaleString()}`;
+
+      const unpaidList = utils.filter(u => u.status === 'Unpaid');
+      const unpaidAmount = unpaidList.reduce((sum, u) => sum + (u.water + u.electricity), 0);
+      document.getElementById('stat-unpaid-bills').innerText = `RM ${unpaidAmount.toFixed(2)}`;
+      document.getElementById('stat-unpaid-count').innerText = `${unpaidList.length} bills pending payment`;
+
+      const totalPrep = preps.reduce((sum, item) => sum + (item.units * item.costPerUnit), 0);
+      document.getElementById('stat-prep-expenses').innerText = `RM ${totalPrep.toLocaleString()}`;
+    }
+
+    // Tab 1: Dashboard Property Cards
+    function renderDashboardView(props, utils) {
+      const container = document.getElementById('dashboard-property-cards');
+      if (props.length === 0) {
+        container.innerHTML = `<div class="col-span-3 text-center py-10 text-slate-400">No properties match your filter selection.</div>`;
+        return;
+      }
+
+      container.innerHTML = props.map(p => {
+        const tenant = getTenantByPropId(p.id);
+        const propUtils = utils.filter(u => u.propertyId === p.id);
+        const hasUnpaid = propUtils.some(u => u.status === 'Unpaid');
+
+        return `
+          <div class="border border-slate-200/90 rounded-2xl p-5 hover:border-slate-300 transition-all bg-white flex flex-col justify-between shadow-2xs">
+            <div>
+              <div class="flex items-start justify-between mb-3">
+                <span class="px-2.5 py-1 text-[11px] rounded-full font-semibold ${p.status === 'Occupied' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+                  ${p.status === 'Occupied' ? '● Occupied' : '○ Vacant'}
+                </span>
+                <span class="text-xs font-bold text-slate-900">RM ${p.monthlyRent} / mo</span>
+              </div>
+              <h4 class="font-bold text-slate-900 text-sm line-clamp-1">${p.name}</h4>
+              <p class="text-xs text-slate-400 mt-0.5 line-clamp-2">${p.address}</p>
+
+              <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400">Current Tenant:</span>
+                  <span class="font-medium text-slate-800">${tenant ? tenant.name : '<span class="text-slate-400 italic">No Tenant Assigned</span>'}</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400">Utilities:</span>
+                  <span class="font-medium ${hasUnpaid ? 'text-amber-600 font-semibold' : 'text-emerald-600'}">
+                    ${hasUnpaid ? '⚠️ Pending Dues' : '✓ All Clear (Paid)'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="openPropertyDetailModal('${p.id}')" class="mt-5 w-full py-2.5 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold rounded-xl transition flex items-center justify-center space-x-1.5 shadow-2xs">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <span>View Full Profile</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Tab 2: Owner Prep Expenses Breakdown
+    function renderOwnerPrepView(preps) {
+      const tbody = document.getElementById('owner-prep-table-body');
+      const totalCapex = preps.reduce((sum, item) => sum + (item.units * item.costPerUnit), 0);
+      const uniquePropsCount = new Set(preps.map(p => p.propertyId)).size || 1;
+      const avg = totalCapex / uniquePropsCount;
+
+      document.getElementById('capex-total').innerText = `RM ${totalCapex.toLocaleString('en-MY', {minimumFractionDigits: 2})}`;
+      document.getElementById('capex-average').innerText = `RM ${avg.toLocaleString('en-MY', {minimumFractionDigits: 2})}`;
+      document.getElementById('capex-items-count').innerText = `${preps.length} Items`;
+
+      if (preps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">No preparation expenses found for this filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = preps.map(item => {
+        const prop = getPropertyById(item.propertyId);
+        const subtotal = item.units * item.costPerUnit;
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-5 py-3.5 font-medium text-slate-900">${prop ? prop.name : '-'}</td>
+            <td class="px-5 py-3.5 text-slate-800 font-medium">${item.item}</td>
+            <td class="px-5 py-3.5">
+              <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium">${item.category}</span>
+            </td>
+            <td class="px-5 py-3.5 text-center font-semibold text-slate-800">${item.units} unit</td>
+            <td class="px-5 py-3.5 text-right text-slate-600">RM ${item.costPerUnit.toFixed(2)}</td>
+            <td class="px-5 py-3.5 text-right font-bold text-slate-900">RM ${subtotal.toLocaleString('en-MY', {minimumFractionDigits: 2})}</td>
+            <td class="px-5 py-3.5 text-center">
+              <button onclick="deletePrepItem('${item.id}')" class="p-1 text-rose-500 hover:bg-rose-50 rounded" title="Delete Item">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Tab 3: Properties Directory Grid
+    function renderPropertiesView(props) {
+      const grid = document.getElementById('properties-grid');
+      if (props.length === 0) {
+        grid.innerHTML = `<div class="col-span-3 text-center py-10 text-slate-400">No properties recorded yet.</div>`;
+        return;
+      }
+
+      grid.innerHTML = props.map(p => {
+        const tenant = getTenantByPropId(p.id);
+        const prepItems = db.preparationExpenses.filter(pe => pe.propertyId === p.id);
+        const prepTotal = prepItems.reduce((s, i) => s + (i.units * i.costPerUnit), 0);
+
+        return `
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] px-2.5 py-1 rounded-full font-semibold ${p.status === 'Occupied' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                  ${p.status === 'Occupied' ? '● Occupied' : '○ Vacant Unit'}
+                </span>
+                <span class="text-xs font-semibold text-slate-500">${p.type}</span>
+              </div>
+              <h3 class="font-bold text-base text-slate-900 leading-snug">${p.name}</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed">${p.address}</p>
+
+              <div class="mt-5 p-3.5 bg-slate-50 rounded-xl space-y-2 border border-slate-100">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Monthly Rent:</span>
+                  <span class="font-bold text-slate-900">RM ${p.monthlyRent} / month</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Tied Tenant:</span>
+                  <span class="font-medium text-slate-800">${tenant ? tenant.name : '<span class="text-slate-400 italic">No Tenant</span>'}</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Capex Prepared:</span>
+                  <span class="font-semibold text-purple-700">RM ${prepTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex items-center space-x-2">
+              <button onclick="openPropertyDetailModal('${p.id}')" class="flex-1 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition flex items-center justify-center space-x-1.5 shadow-2xs">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                <span>View Full Profile</span>
+              </button>
+              <button onclick="deleteProperty('${p.id}')" class="p-2.5 border border-rose-200 text-rose-500 rounded-xl hover:bg-rose-50 transition" title="Delete Property">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Tab 4: Tenants View (Tied directly to Property)
+    function renderTenantsView(props) {
+      const tbody = document.getElementById('tenants-table-body');
+      const propIds = props.map(p => p.id);
+      const filteredTenants = db.tenants.filter(t => propIds.includes(t.propertyId));
+
+      if (filteredTenants.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">No tenants registered for this property selection.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredTenants.map(t => {
+        const prop = getPropertyById(t.propertyId);
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-5 py-3.5">
+              <div class="font-bold text-slate-900">${t.name}</div>
+              <div class="text-[11px] text-slate-500 flex items-center space-x-2 mt-0.5">
+                <a href="https://wa.me/6${t.phone.replace(/[^0-9]/g, '')}" target="_blank" class="text-emerald-600 hover:underline flex items-center font-medium">
+                  <i data-lucide="message-circle" class="w-3 h-3 mr-1"></i>${t.phone}
+                </a>
+                ${t.ic ? `<span>• IC: ${t.ic}</span>` : ''}
+              </div>
+            </td>
+            <td class="px-5 py-3.5 font-medium text-slate-800">
+              <div class="font-semibold text-slate-900">${prop ? prop.name : '<span class="text-rose-500">Unlinked Unit</span>'}</div>
+              <span class="text-[11px] text-slate-400">${prop ? prop.type : ''}</span>
+            </td>
+            <td class="px-5 py-3.5 font-bold text-slate-900">
+              RM ${prop ? prop.monthlyRent : '-'}
+            </td>
+            <td class="px-5 py-3.5 text-slate-700 font-semibold">
+              RM ${t.deposit ? t.deposit.toLocaleString() : '0'}
+            </td>
+            <td class="px-5 py-3.5 text-slate-600 text-[11px]">
+              <div>${t.startDate} to</div>
+              <div class="font-medium text-slate-800">${t.endDate}</div>
+            </td>
+            <td class="px-5 py-3.5 text-center">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">Active</span>
+            </td>
+            <td class="px-5 py-3.5 text-center">
+              <button onclick="deleteTenant('${t.id}')" class="p-1 text-rose-500 hover:bg-rose-50 rounded" title="Untie / Remove Tenant">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Tab 5: Utilities View
+    function renderUtilitiesView(utils) {
+      const tbody = document.getElementById('bills-table-body');
+      if (utils.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">No utility bills recorded for this filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = utils.map(u => {
+        const prop = getPropertyById(u.propertyId);
+        const tenant = getTenantByPropId(u.propertyId);
+        const total = u.water + u.electricity;
+        const isPaid = u.status === 'Paid';
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-5 py-3.5">
+              <div class="font-bold text-slate-900">${prop ? prop.name : '-'}</div>
+              <div class="text-[11px] text-slate-400">Tenant: ${tenant ? tenant.name : '<span class="italic">Vacant Unit</span>'}</div>
+            </td>
+            <td class="px-5 py-3.5 font-medium text-slate-700">${u.month} ${u.year}</td>
+            <td class="px-5 py-3.5 text-slate-800 font-medium">RM ${u.water.toFixed(2)}</td>
+            <td class="px-5 py-3.5 text-slate-800 font-medium">RM ${u.electricity.toFixed(2)}</td>
+            <td class="px-5 py-3.5 font-bold text-slate-900">RM ${total.toFixed(2)}</td>
+            <td class="px-5 py-3.5 text-center">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isPaid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+                ${isPaid ? '✓ Paid' : '⏳ Pending / Unpaid'}
+              </span>
+            </td>
+            <td class="px-5 py-3.5 text-center">
+              <button onclick="toggleBillStatus('${u.id}')" class="px-2.5 py-1 text-xs border border-slate-200 rounded-lg hover:bg-slate-100 font-medium text-slate-700 transition">
+                Toggle Status
+              </button>
+            </td>
+            <td class="px-5 py-3.5 text-center">
+              <button onclick="deleteBill('${u.id}')" class="p-1 text-rose-500 hover:bg-rose-50 rounded">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ================= MODAL: PROPERTY FULL DETAILS VIEW =================
+    function openPropertyDetailModal(propId) {
+      const prop = getPropertyById(propId);
+      if (!prop) return;
+
+      const tenant = getTenantByPropId(propId);
+      const bills = db.utilities.filter(u => u.propertyId === propId);
+      const preps = db.preparationExpenses.filter(pe => pe.propertyId === propId);
+
+      document.getElementById('prop-detail-name').innerText = prop.name;
+      document.getElementById('prop-detail-address').innerText = prop.address;
+      document.getElementById('prop-detail-type').innerText = prop.type;
+      document.getElementById('prop-detail-rent').innerText = `RM ${prop.monthlyRent} / month`;
+
+      const badge = document.getElementById('prop-detail-badge');
+      if (prop.status === 'Occupied') {
+        badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-50 text-emerald-700';
+        badge.innerText = '● Occupied';
+      } else {
+        badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-semibold bg-amber-50 text-amber-700';
+        badge.innerText = '○ Vacant';
+      }
+
+      const tenantBox = document.getElementById('prop-detail-tenant-content');
+      const tenantAction = document.getElementById('prop-detail-tenant-action');
+
+      if (tenant) {
+        tenantBox.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <span class="text-xs text-slate-400 font-medium">Tenant Full Name</span>
+              <p class="font-bold text-slate-900 text-sm mt-0.5">${tenant.name}</p>
+              <p class="text-xs text-slate-500 mt-0.5">IC / Passport: ${tenant.ic || 'N/A'}</p>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 font-medium">Direct Contact</span>
+              <p class="font-bold text-slate-900 text-sm mt-0.5">${tenant.phone}</p>
+              <a href="https://wa.me/6${tenant.phone.replace(/[^0-9]/g, '')}" target="_blank" class="inline-flex items-center text-xs text-emerald-600 font-semibold mt-1 hover:underline">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 mr-1"></i> WhatsApp Tenant
+              </a>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 font-medium">Security Deposit & Lease</span>
+              <p class="font-bold text-slate-900 text-sm mt-0.5">Deposit: RM ${tenant.deposit.toLocaleString()}</p>
+              <p class="text-xs text-slate-500 mt-0.5">${tenant.startDate} &rarr; ${tenant.endDate}</p>
+            </div>
+          </div>
+        `;
+        tenantAction.innerHTML = `
+          <button onclick="unassignTenant('${tenant.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-medium border border-rose-200 px-3 py-1 rounded-lg hover:bg-rose-50 transition">
+            Untie Tenant
+          </button>
+        `;
+      } else {
+        tenantBox.innerHTML = `
+          <div class="text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <p class="text-xs text-slate-500">This property unit is currently vacant with no active tenant.</p>
+            <button onclick="closeModal('modal-property-detail'); openModal('modal-add-tenant'); document.getElementById('tenant-prop-select').value='${prop.id}';" class="mt-3 px-3.5 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition">
+              + Assign Tenant to this Unit
+            </button>
+          </div>
+        `;
+        tenantAction.innerHTML = '';
+      }
+
+      // Bills Table in Modal
+      const billsTbody = document.getElementById('prop-detail-bills-tbody');
+      if (bills.length === 0) {
+        billsTbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400">No utility records found for this unit.</td></tr>`;
+      } else {
+        billsTbody.innerHTML = bills.map(b => {
+          const total = b.water + b.electricity;
+          return `
+            <tr>
+              <td class="px-3 py-2 font-medium">${b.month} ${b.year}</td>
+              <td class="px-3 py-2">RM ${b.water.toFixed(2)}</td>
+              <td class="px-3 py-2">RM ${b.electricity.toFixed(2)}</td>
+              <td class="px-3 py-2 font-bold text-slate-900">RM ${total.toFixed(2)}</td>
+              <td class="px-3 py-2 text-center">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${b.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+                  ${b.status}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-center">
+                <button onclick="toggleBillStatus('${b.id}'); openPropertyDetailModal('${propId}');" class="text-[11px] text-blue-600 hover:underline">Toggle</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Preparation Table in Modal
+      const prepTbody = document.getElementById('prop-detail-prep-tbody');
+      const prepSum = preps.reduce((s, item) => s + (item.units * item.costPerUnit), 0);
+      document.getElementById('prop-detail-prep-sum').innerText = `Total: RM ${prepSum.toLocaleString('en-MY', {minimumFractionDigits: 2})}`;
+
+      if (preps.length === 0) {
+        prepTbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400">No preparation expenses recorded for this unit.</td></tr>`;
+      } else {
+        prepTbody.innerHTML = preps.map(item => `
+          <tr>
+            <td class="px-3 py-2 font-medium text-slate-900">${item.item}</td>
+            <td class="px-3 py-2 text-slate-500">${item.category}</td>
+            <td class="px-3 py-2 text-center font-semibold">${item.units}</td>
+            <td class="px-3 py-2 text-right">RM ${item.costPerUnit.toFixed(2)}</td>
+            <td class="px-3 py-2 text-right font-bold text-slate-900">RM ${(item.units * item.costPerUnit).toFixed(2)}</td>
+          </tr>
+        `).join('');
+      }
+
+      lucide.createIcons();
+      openModal('modal-property-detail');
+    }
+
+    // ================= DATA MUTATION HANDLERS =================
+    function handleCreateProperty(e) {
+      e.preventDefault();
+      const newProp = {
+        id: 'prop-' + Date.now(),
+        name: document.getElementById('prop-name').value,
+        type: document.getElementById('prop-type').value,
+        monthlyRent: parseFloat(document.getElementById('prop-rent').value) || 0,
+        address: document.getElementById('prop-address').value,
+        status: 'Vacant'
+      };
+
+      db.properties.push(newProp);
+      saveDB();
+      closeModal('modal-add-property');
+      document.getElementById('form-add-property').reset();
+      populatePropertyDropdowns();
+      renderCurrentTab();
+    }
+
+    function handleCreateTenant(e) {
+      e.preventDefault();
+      const propId = document.getElementById('tenant-prop-select').value;
+      const newTenant = {
+        id: 'ten-' + Date.now(),
+        propertyId: propId,
+        name: document.getElementById('tenant-name').value,
+        phone: document.getElementById('tenant-phone').value,
+        ic: document.getElementById('tenant-ic').value,
+        deposit: parseFloat(document.getElementById('tenant-deposit').value) || 0,
+        startDate: document.getElementById('tenant-start').value,
+        endDate: document.getElementById('tenant-end').value,
+        status: 'Active'
+      };
+
+      const prop = getPropertyById(propId);
+      if (prop) prop.status = 'Occupied';
+
+      db.tenants.push(newTenant);
+      saveDB();
+      closeModal('modal-add-tenant');
+      document.getElementById('form-add-tenant').reset();
+      renderCurrentTab();
+    }
+
+    function handleCreateBill(e) {
+      e.preventDefault();
+      const newBill = {
+        id: 'bill-' + Date.now(),
+        propertyId: document.getElementById('bill-prop-select').value,
+        month: document.getElementById('bill-month').value,
+        year: parseInt(document.getElementById('bill-year').value) || 2026,
+        water: parseFloat(document.getElementById('bill-water').value) || 0,
+        electricity: parseFloat(document.getElementById('bill-electric').value) || 0,
+        status: document.getElementById('bill-status').value
+      };
+
+      db.utilities.push(newBill);
+      saveDB();
+      closeModal('modal-add-bill');
+      document.getElementById('form-add-bill').reset();
+      renderCurrentTab();
+    }
+
+    function handleCreatePrep(e) {
+      e.preventDefault();
+      const newPrep = {
+        id: 'prep-' + Date.now(),
+        propertyId: document.getElementById('prep-prop-select').value,
+        item: document.getElementById('prep-name').value,
+        category: document.getElementById('prep-cat').value,
+        units: parseInt(document.getElementById('prep-qty').value) || 1,
+        costPerUnit: parseFloat(document.getElementById('prep-rate').value) || 0,
+        year: parseInt(document.getElementById('prep-year').value) || 2026
+      };
+
+      db.preparationExpenses.push(newPrep);
+      saveDB();
+      closeModal('modal-add-prep');
+      document.getElementById('form-add-prep').reset();
+      renderCurrentTab();
+    }
+
+    function toggleBillStatus(billId) {
+      const bill = db.utilities.find(b => b.id === billId);
+      if (bill) {
+        bill.status = bill.status === 'Paid' ? 'Unpaid' : 'Paid';
+        saveDB();
+        renderCurrentTab();
+      }
+    }
+
+    function unassignTenant(tenantId) {
+      const tenant = db.tenants.find(t => t.id === tenantId);
+      if (tenant) {
+        const prop = getPropertyById(tenant.propertyId);
+        if (prop) prop.status = 'Vacant';
+        db.tenants = db.tenants.filter(t => t.id !== tenantId);
+        saveDB();
+        closeModal('modal-property-detail');
+        renderCurrentTab();
+      }
+    }
+
+    function deleteProperty(id) {
+      db.properties = db.properties.filter(p => p.id !== id);
+      db.tenants = db.tenants.filter(t => t.propertyId !== id);
+      db.utilities = db.utilities.filter(u => u.propertyId !== id);
+      db.preparationExpenses = db.preparationExpenses.filter(pe => pe.propertyId !== id);
+      saveDB();
+      populatePropertyDropdowns();
+      renderCurrentTab();
+    }
+
+    function deleteTenant(id) {
+      const tenant = db.tenants.find(t => t.id === id);
+      if (tenant) {
+        const prop = getPropertyById(tenant.propertyId);
+        if (prop) prop.status = 'Vacant';
+      }
+      db.tenants = db.tenants.filter(t => t.id !== id);
+      saveDB();
+      renderCurrentTab();
+    }
+
+    function deleteBill(id) {
+      db.utilities = db.utilities.filter(u => u.id !== id);
+      saveDB();
+      renderCurrentTab();
+    }
+
+    function deletePrepItem(id) {
+      db.preparationExpenses = db.preparationExpenses.filter(pe => pe.id !== id);
+      saveDB();
+      renderCurrentTab();
+    }
+
+    // ================= INITIALIZATION =================
+    function initApp() {
+      populatePropertyDropdowns();
+      switchTab('dashboard');
+      calcPrepTotal();
+      lucide.createIcons();
+    }
+
+    window.onload = function() {
+      checkAuthSession();
+    };
+  </script>
+</body>
+</html>
